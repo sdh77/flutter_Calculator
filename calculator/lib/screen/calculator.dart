@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types
+
 import 'package:calculator/screen/KeyPad.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +20,7 @@ class calcState extends State<calc> {
   double beforeValue = 0;
   String inputValue = "";
   String calcText = "";
+  bool stateDouble = false;
   bool stateBefore = false;
   set string(String value) => setState(() => inputValue = value);
 
@@ -39,14 +42,15 @@ class calcState extends State<calc> {
       calcValue = 0;
       beforeValue = 0;
       stateBefore = false;
+      stateDouble = false;
     } else {
       if (beforeValue == 0) {
         beforeValue = calcValue;
         calcValue = 0;
         stateBefore = true;
-        if (calcText == "%") {
+        if (inputValue == "%") {
           beforeValue = beforeValue / 100;
-        } else if (calcText == "±") {
+        } else if (inputValue == "±") {
           beforeValue = -beforeValue;
         }
       } else {
@@ -56,23 +60,28 @@ class calcState extends State<calc> {
           } else {
             beforeValue = beforeValue / calcValue;
           }
+          stateDouble = true;
         } else if (calcText == "+") {
           beforeValue = beforeValue + calcValue;
         } else if (calcText == "-") {
           beforeValue = beforeValue - calcValue;
         } else if (calcText == "×") {
           beforeValue = beforeValue * calcValue;
-        } else if (calcText == "%") {
+        } else if (inputValue == "%") {
           beforeValue = beforeValue / 100;
-        } else if (calcText == "±") {
-          beforeValue = -beforeValue;
+          stateDouble = true;
+        } else if (inputValue == "±") {
+          print(stateBefore);
+          stateBefore ? beforeValue = -beforeValue : calcValue = -calcValue;
         }
+
+        calcText = inputValue;
         calcValue = 0;
         stateBefore = true;
       }
-      calcText = inputValue;
+      print(stateBefore);
     }
-    print(beforeValue);
+    print(beforeValue.toInt());
     print(calcValue);
 
     return Scaffold(
@@ -88,7 +97,13 @@ class calcState extends State<calc> {
                 child: Container(
                   alignment: Alignment.topRight,
                   child: Text(
-                    stateBefore ? '$beforeValue' : '$calcValue',
+                    stateBefore
+                        ? stateDouble
+                            ? beforeValue.toStringAsFixed(2)
+                            : beforeValue.toStringAsFixed(0)
+                        : stateDouble
+                            ? calcValue.toStringAsFixed(2)
+                            : calcValue.toStringAsFixed(0),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),

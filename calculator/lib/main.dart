@@ -22,11 +22,11 @@ class App extends StatelessWidget {
           ),
           titleLarge: TextStyle(
             color: Colors.white,
-            fontSize: 100,
+            fontSize: 60,
           ),
         ),
       ),
-      home: calc(),
+      home: const calc(),
     );
   }
 }
